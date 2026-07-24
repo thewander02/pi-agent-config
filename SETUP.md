@@ -56,6 +56,18 @@ Longer provider-side cache retention can improve cache reuse, but it also
 retains cached prompt data at the provider for longer. Consider that privacy
 tradeoff before enabling it, especially for sensitive work.
 
+## Prompt commands
+
+Pi auto-discovers the checked-in files in `prompts/` after a restart or
+`/reload`; no separate installation is needed.
+
+- `/debug npm test fails only on CI` — debug a problem with a hypothesis-driven loop
+- `/verify` — independently verify the current work and report evidence
+- `/final-check` — run bounded, read-only review rounds over the current diff
+- `/second-opinion is this concurrency fix safe?` — request an independent read-only assessment
+
+`/final-check` fans out read-only reviewers and can consume provider quota.
+
 ## fd and rg tools
 
 The `file-search` extension registers `fd` and `rg` as model tools. No setup is normally needed: at startup it silently uses a system-installed `fd` (or `fdfind` on Debian/Ubuntu) and `rg` when available, or an existing fallback binary in `~/.pi/agent/bin/`. Only when neither exists does it download an official release binary (macOS/Linux, arm64/x64, over HTTPS) into `~/.pi/agent/bin/` and show a one-time notification. If your platform is unsupported, install `fd` and `rg` with your package manager and restart pi.

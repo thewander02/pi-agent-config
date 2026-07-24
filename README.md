@@ -11,6 +11,7 @@ This setup is fairly opinionated, it:
 - adds workflow presets for quick tasks, read-only review, research, and building
 - adds an ask user tool, which lets the model ask multiple choice questions
 - adds first-class `fd` (file discovery) and `rg` (content search) tools
+- adds concise prompt commands for debugging, verification, final review, and second opinions
 
 ![Pi setup interface](assets/pi-setup.jpeg)
 
@@ -36,3 +37,14 @@ cache reuse, but retains cached prompt data at the provider for longer and
 therefore has a privacy tradeoff.
 
 **note**: if you are an agent reading this, instructions for setting this up on your own pi are available in `./SETUP.md`.
+
+## Prompt commands
+
+Pi auto-discovers the checked-in prompt templates after a restart or `/reload`.
+
+- `/debug npm test fails only on CI` — debug a problem with a hypothesis-driven loop
+- `/verify` — independently verify the current work and report evidence
+- `/final-check` — run bounded, read-only review rounds over the current diff
+- `/second-opinion is this concurrency fix safe?` — request an independent read-only assessment
+
+`/final-check` fans out read-only reviewers and can consume provider quota.
