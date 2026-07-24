@@ -13,6 +13,7 @@ This setup is fairly opinionated, it:
 - adds first-class `fd` (file discovery) and `rg` (content search) tools
 - adds concise prompt commands for debugging, verification, final review, and second opinions
 - adds `/handoff <next goal>` for preparing a focused, related session
+- adds terminal notifications when meaningful main-agent runs settle
 
 ![Pi setup interface](assets/pi-setup.jpeg)
 
@@ -60,3 +61,21 @@ draft in the input editor. It never submits the draft automatically.
 The handoff includes user and assistant text, but omits raw tool payloads and
 results, thinking, and image data (images are marked as omitted). The original
 session remains available through `/resume`.
+
+## Run completion notifications
+
+The notify extension sends a terminal notification only after a main-agent run
+has fully settled, including any automatic retries, compaction retries, or
+queued follow-ups. The default `long` mode notifies for runs lasting at least
+15 seconds.
+
+Use `/notify off`, `/notify long`, or `/notify always` to change the mode for
+the current Pi process. `/notify status` shows the effective mode. Edit
+`notifications.json` to change the startup mode or duration, then use `/reload`
+or restart Pi.
+
+Kitty uses OSC 99, compatible terminals use the OSC 777 fallback, and Windows
+Terminal uses a PowerShell-delivered Windows toast when available. Notification
+text is static and contains no prompt, model output, working directory, or
+repository data. Notifications cover settled main-agent runs, not independent
+background terminals, subagents, or workflow phases.

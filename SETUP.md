@@ -68,6 +68,28 @@ Pi auto-discovers the checked-in files in `prompts/` after a restart or
 
 `/final-check` fans out read-only reviewers and can consume provider quota.
 
+## Run completion notifications
+
+The notify extension is enabled by `notifications.json`. Its default mode is
+`long`, which sends a notification when a main-agent run has fully settled
+after at least 15 seconds:
+
+```json
+{ "mode": "long", "minimumDurationMs": 15000 }
+```
+
+Supported modes are `off`, `long`, and `always`. In Pi, use `/notify off`,
+`/notify long`, or `/notify always` to change the mode in memory for the current
+process, and `/notify status` to inspect it. After editing
+`notifications.json`, use `/reload` or restart Pi.
+
+Kitty receives OSC 99 notifications, other compatible terminals receive the
+OSC 777 fallback, and Windows Terminal receives a Windows toast when PowerShell
+is available. The title and body are static: notifications never include
+prompt text, model output, paths, or repository data. This extension notifies
+for settled main-agent runs only; it does not promise separate notifications
+for background terminals, subagents, or workflow phases.
+
 ## fd and rg tools
 
 The `file-search` extension registers `fd` and `rg` as model tools. No setup is normally needed: at startup it silently uses a system-installed `fd` (or `fdfind` on Debian/Ubuntu) and `rg` when available, or an existing fallback binary in `~/.pi/agent/bin/`. Only when neither exists does it download an official release binary (macOS/Linux, arm64/x64, over HTTPS) into `~/.pi/agent/bin/` and show a one-time notification. If your platform is unsupported, install `fd` and `rg` with your package manager and restart pi.
