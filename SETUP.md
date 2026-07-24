@@ -72,6 +72,19 @@ Pi auto-discovers the checked-in files in `prompts/` after a restart or
 
 The `file-search` extension registers `fd` and `rg` as model tools. No setup is normally needed: at startup it silently uses a system-installed `fd` (or `fdfind` on Debian/Ubuntu) and `rg` when available, or an existing fallback binary in `~/.pi/agent/bin/`. Only when neither exists does it download an official release binary (macOS/Linux, arm64/x64, over HTTPS) into `~/.pi/agent/bin/` and show a one-time notification. If your platform is unsupported, install `fd` and `rg` with your package manager and restart pi.
 
+## Focused session handoff
+
+Run `/handoff <next goal>` from Pi's interactive TUI to prepare a focused
+replacement session. The command uses the active model, so select and
+authenticate that model as usual before running it.
+
+The active conversation is bounded before generation. User and assistant text
+are included; raw tool arguments and results, thinking, and image data are
+omitted, with images represented by an omission marker. Pi opens the generated
+handoff as a draft for review and editing, creates a new related session only
+after approval, and never submits the draft automatically. The original session
+is preserved and can be reopened with `/resume`.
+
 ## Theme
 
 Add the included theme to `~/.pi/agent/settings.json` while keeping your existing settings:

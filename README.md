@@ -12,6 +12,7 @@ This setup is fairly opinionated, it:
 - adds an ask user tool, which lets the model ask multiple choice questions
 - adds first-class `fd` (file discovery) and `rg` (content search) tools
 - adds concise prompt commands for debugging, verification, final review, and second opinions
+- adds `/handoff <next goal>` for preparing a focused, related session
 
 ![Pi setup interface](assets/pi-setup.jpeg)
 
@@ -48,3 +49,14 @@ Pi auto-discovers the checked-in prompt templates after a restart or `/reload`.
 - `/second-opinion is this concurrency fix safe?` — request an independent read-only assessment
 
 `/final-check` fans out read-only reviewers and can consume provider quota.
+
+## Focused session handoff
+
+Use `/handoff <next goal>` when a long session has accumulated more context than
+the next task needs. The command uses the active model to generate a focused
+draft, opens it for review, and then creates a related session with the edited
+draft in the input editor. It never submits the draft automatically.
+
+The handoff includes user and assistant text, but omits raw tool payloads and
+results, thinking, and image data (images are marked as omitted). The original
+session remains available through `/resume`.
