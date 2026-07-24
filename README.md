@@ -17,6 +17,8 @@ This setup is fairly opinionated, it:
 
 ![Pi setup interface](assets/pi-setup.jpeg)
 
+Inspired by [davis7dotsh/my-pi-setup](https://github.com/davis7dotsh/my-pi-setup).
+
 ## Workflow presets
 
 Use `/preset` to choose a preset, start Pi with `--preset <name>`, or press
