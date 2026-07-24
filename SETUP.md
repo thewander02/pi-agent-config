@@ -21,6 +21,41 @@ connect it immediately after restarting Pi.
 
 No Firecrawl API key or `.env` file is required.
 
+## Workflow presets
+
+The included `presets.json` defines four task-focused configurations:
+
+- `quick` uses a faster model with inspection-only tools for lightweight
+  questions.
+- `review` limits the current main session to read-only inspection tools and
+  adds read-only review instructions. This is a main-session boundary, not a
+  sandbox for external subagents.
+- `research` enables read-only file inspection, Aside Browser, MCP, and user
+  questions for research work.
+- `build` enables the full model, reasoning, file-editing, terminal, research,
+  workflow, and subagent toolset for implementation.
+
+Choose interactively with `/preset`, pass a preset at startup with
+`pi --preset quick`, or press `ctrl+shift+u` to cycle through `quick`, `review`,
+`research`, `build`, and no preset. Use `/preset none` to restore the model,
+thinking level, and tools that were active before the preset.
+
+User-wide presets are loaded from `~/.pi/agent/presets.json`. A project can
+override or add presets in `.pi/presets.json`, but Pi loads project-local
+presets only after the project is trusted. Use `/scoped-models` if a preset's
+model needs to be made available in the relevant scope.
+
+Optionally set `PI_CACHE_RETENTION=long` when starting Pi to request longer
+prompt-cache retention from supported providers:
+
+```sh
+PI_CACHE_RETENTION=long pi --preset research
+```
+
+Longer provider-side cache retention can improve cache reuse, but it also
+retains cached prompt data at the provider for longer. Consider that privacy
+tradeoff before enabling it, especially for sensitive work.
+
 ## fd and rg tools
 
 The `file-search` extension registers `fd` and `rg` as model tools. No setup is normally needed: at startup it silently uses a system-installed `fd` (or `fdfind` on Debian/Ubuntu) and `rg` when available, or an existing fallback binary in `~/.pi/agent/bin/`. Only when neither exists does it download an official release binary (macOS/Linux, arm64/x64, over HTTPS) into `~/.pi/agent/bin/` and show a one-time notification. If your platform is unsupported, install `fd` and `rg` with your package manager and restart pi.

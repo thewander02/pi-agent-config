@@ -1,0 +1,47 @@
+{
+  "quick": {
+    "provider": "openai-codex",
+    "model": "gpt-5.6-luna",
+    "thinkingLevel": "medium",
+    "tools": ["read", "fd", "rg", "ask_user"]
+  },
+  "review": {
+    "provider": "openai-codex",
+    "model": "gpt-5.6-sol",
+    "thinkingLevel": "high",
+    "tools": ["read", "fd", "rg"],
+    "instructions": "Operate read-only. Inspect and report; do not modify files or execute commands."
+  },
+  "research": {
+    "provider": "openai-codex",
+    "model": "gpt-5.6-sol",
+    "thinkingLevel": "high",
+    "tools": ["read", "fd", "rg", "aside_repl", "mcp", "ask_user"]
+  },
+  "build": {
+    "provider": "openai-codex",
+    "model": "gpt-5.6-sol",
+    "thinkingLevel": "high",
+    "tools": [
+      "read",
+      "bash",
+      "edit",
+      "write",
+      "fd",
+      "rg",
+      "ask_user",
+      "bg_start",
+      "bg_status",
+      "bg_list",
+      "bg_kill",
+      "subagent_spawn",
+      "subagent_wait",
+      "subagent_cancel",
+      "subagent_check",
+      "subagent_list",
+      "workflow",
+      "aside_repl",
+      "mcp"
+    ]
+  }
+}
