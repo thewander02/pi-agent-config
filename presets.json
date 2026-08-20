@@ -16,7 +16,7 @@
     "provider": "openai-codex",
     "model": "gpt-5.6-sol",
     "thinkingLevel": "high",
-    "tools": ["read", "fd", "rg", "aside_repl", "mcp", "ask_user"]
+    "tools": ["read", "fd", "rg", "ask_user", "load_tools"]
   },
   "build": {
     "provider": "openai-codex",
@@ -30,18 +30,7 @@
       "fd",
       "rg",
       "ask_user",
-      "bg_start",
-      "bg_status",
-      "bg_list",
-      "bg_kill",
-      "subagent_spawn",
-      "subagent_wait",
-      "subagent_cancel",
-      "subagent_check",
-      "subagent_list",
-      "workflow",
-      "aside_repl",
-      "mcp"
+      "load_tools"
     ]
   }
 }

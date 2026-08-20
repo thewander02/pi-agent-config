@@ -8,7 +8,7 @@ This setup is fairly opinionated, it:
 - adds background terminals + ui to manage them
 - adds subagents to pi
 - adds workflows to pi
-- adds workflow presets for quick tasks, read-only review, research, and building
+- adds cache-aware GPT-5.6 presets plus lazy loading for optional tool families
 - adds an ask user tool, which lets the model ask multiple choice questions
 - adds first-class `fd` (file discovery) and `rg` (content search) tools
 - adds concise prompt commands for debugging, verification, final review, and second opinions
@@ -25,20 +25,48 @@ Use `/preset` to choose a preset, start Pi with `--preset <name>`, or press
 `ctrl+shift+u` to cycle through `quick`, `review`, `research`, `build`, and no
 preset.
 
-- `quick` is for fast inspection and lightweight questions.
-- `review` makes the main session read-only for code review. It is not a
+- `quick` uses Luna/medium for fast inspection and lightweight questions.
+- `review` keeps Sol/high and makes the main session read-only. It is not a
   sandbox for external subagents.
-- `research` enables browser and MCP research tools without file-writing tools.
-- `build` enables the full implementation toolset.
+- `research` keeps Sol/high with read-only tools and the optional-tool loader.
+- `build` keeps Sol/high with the core implementation tools and loader.
 
 Global presets live in `~/.pi/agent/presets.json`. Project-local presets load
 from `.pi/presets.json` only when the project is trusted. Use `/scoped-models`
 to manage which models are available in the current scope.
 
-For longer supported provider-side prompt caching, optionally start Pi with
-`PI_CACHE_RETENTION=long`. Longer provider-side cache retention can improve
-cache reuse, but retains cached prompt data at the provider for longer and
-therefore has a privacy tradeoff.
+## High-efficiency defaults
+
+`settings.efficient.example.json` documents the recommended global settings.
+The active setup keeps Sol/high and the full 272K GPT-5.6 context window, while
+reserving 32K for responses and retaining 32K after normal compaction. It also
+explicitly uses Codex's cached WebSocket transport.
+
+The `load_tools` extension is the main harness optimization. Browser/MCP,
+background-terminal, subagent, and workflow schemas stay out of the initial
+prompt. The model activates them only when needed. GPT-5.6 supports Pi's native
+additive tool loading, so newly loaded definitions are anchored at the loader
+result instead of rewriting the stable prompt prefix. Local rare tools omit
+active prompt snippets/guidelines, and the loader filters equivalent one-line
+snippets from package tools out of native OpenAI request instructions. This
+keeps additive browser/MCP activation from rebuilding the cacheable system
+prefix. Capabilities are preserved; an uncommon capability costs one small
+loader call. A clean-session RPC audit reduced active schemas from 27 tools /
+29,442 characters to 11 tools / 9,434 characters—about 5K estimated initial
+prompt tokens.
+
+Run `/efficiency` to inspect current system-prompt size, active schema size,
+optional tools, native loading support, context occupancy, and cache hit rate.
+`showCacheMissNotices` remains enabled, and `/session` reports cache hit rate
+and re-billed cache misses. Keep a model and tool set stable within a session
+when practical; use `/handoff` instead of carrying unrelated work forward.
+Model-generated run recaps remain disabled by default because they add a second
+request after every run. Use `/summaries on` to opt in.
+
+For API providers that support it, `PI_CACHE_RETENTION=long` requests longer
+provider-side caching (OpenAI up to 24h), with a prompt-retention privacy
+tradeoff. OpenAI Codex subscription sessions already use session-scoped cached
+WebSockets here and do not require that environment variable.
 
 **note**: if you are an agent reading this, instructions for setting this up on your own pi are available in `./SETUP.md`.
 

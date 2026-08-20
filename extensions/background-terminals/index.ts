@@ -35,8 +35,6 @@ import {
   BG_KILL_TOOL_DESCRIPTION,
   BG_LIST_TOOL_DESCRIPTION,
   BG_START_PARAMETER_DESCRIPTIONS,
-  BG_START_PROMPT_GUIDELINES,
-  BG_START_PROMPT_SNIPPET,
   BG_START_TOOL_DESCRIPTION,
   BG_STATUS_PARAMETER_DESCRIPTIONS,
   BG_STATUS_TOOL_DESCRIPTION,
@@ -207,8 +205,6 @@ export default function (pi: ExtensionAPI) {
     name: "bg_start",
     label: "Start Background Terminal",
     description: BG_START_TOOL_DESCRIPTION,
-    promptSnippet: BG_START_PROMPT_SNIPPET,
-    promptGuidelines: BG_START_PROMPT_GUIDELINES,
     parameters: Type.Object({
       command: Type.String({
         description: BG_START_PARAMETER_DESCRIPTIONS.command,

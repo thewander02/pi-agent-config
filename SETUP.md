@@ -25,15 +25,11 @@ No Firecrawl API key or `.env` file is required.
 
 The included `presets.json` defines four task-focused configurations:
 
-- `quick` uses a faster model with inspection-only tools for lightweight
-  questions.
-- `review` limits the current main session to read-only inspection tools and
-  adds read-only review instructions. This is a main-session boundary, not a
-  sandbox for external subagents.
-- `research` enables read-only file inspection, Aside Browser, MCP, and user
-  questions for research work.
-- `build` enables the full model, reasoning, file-editing, terminal, research,
-  workflow, and subagent toolset for implementation.
+- `quick` uses GPT-5.6 Luna/medium with inspection-only tools.
+- `review` keeps Sol/high, limits the main session to read-only tools, and adds
+  bounded review instructions. This is not a sandbox for external agents.
+- `research` keeps Sol/high with read-only files and the optional-tool loader.
+- `build` keeps Sol/high with core implementation tools and the loader.
 
 Choose interactively with `/preset`, pass a preset at startup with
 `pi --preset quick`, or press `ctrl+shift+u` to cycle through `quick`, `review`,
@@ -45,16 +41,51 @@ override or add presets in `.pi/presets.json`, but Pi loads project-local
 presets only after the project is trusted. Use `/scoped-models` if a preset's
 model needs to be made available in the relevant scope.
 
-Optionally set `PI_CACHE_RETENTION=long` when starting Pi to request longer
-prompt-cache retention from supported providers:
+## GPT-5.6 efficiency settings
 
-```sh
-PI_CACHE_RETENTION=long pi --preset research
+Merge `settings.efficient.example.json` into your global `settings.json`. The
+recommended defaults preserve Sol/high and the full 272K GPT-5.6 context while
+using explicit `websocket-cached` transport, cache-miss notices, and a 32K
+response reserve:
+
+```json
+{
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "high",
+  "transport": "websocket-cached",
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 32768,
+    "keepRecentTokens": 32000
+  }
+}
 ```
 
-Longer provider-side cache retention can improve cache reuse, but it also
-retains cached prompt data at the provider for longer. Consider that privacy
-tradeoff before enabling it, especially for sensitive work.
+The cached WebSocket sends only new conversation items after the first
+compatible Codex request while keeping automatic SSE fallback available. This
+reduces transport overhead; billed context savings still come from provider
+prompt-cache reads, which `/session` reports separately.
+
+The `load_tools` extension removes optional browser/MCP, background-terminal,
+subagent, and workflow schemas before the first request. The model can activate
+matching tools on demand. GPT-5.6 uses Pi's native additive loading protocol,
+which anchors definitions at the loader result and preserves the original
+cacheable prefix. Local optional tools intentionally omit `promptSnippet` and
+`promptGuidelines`. For package tools that still register one-line snippets,
+the loader keeps those lines out of native OpenAI request instructions so
+activation does not rebuild the system prompt and cause a cache miss. In a
+clean-session RPC audit this reduced active schemas from 27 tools / 29,442
+characters to 11 tools / 9,434 characters, or roughly 5K estimated initial
+prompt tokens. Use `/efficiency` to inspect the live prompt, schemas, context,
+loading mode, and session cache ratio.
+
+Model-generated run recaps are disabled by default because they add a request
+after every settled run. Use `/summaries on|off|status`; when enabled, they use
+Luna/low unless changed with `/summary-model`.
+
+For non-Codex API providers that support extended prompt caching, optionally
+start Pi with `PI_CACHE_RETENTION=long`. OpenAI can retain cached prompts for up
+to 24 hours, so consider the privacy tradeoff before enabling it.
 
 ## Prompt commands
 

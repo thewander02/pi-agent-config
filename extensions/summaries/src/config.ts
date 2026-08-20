@@ -23,15 +23,17 @@ export const REASONING_LEVELS = [
 export type ReasoningLevel = (typeof REASONING_LEVELS)[number];
 
 export interface SummaryConfig {
+  readonly enabled: boolean;
   readonly provider: string;
   readonly model: string;
   readonly reasoning: ReasoningLevel;
 }
 
 export const DEFAULT_SUMMARY_CONFIG: SummaryConfig = {
+  enabled: false,
   provider: "openai-codex",
   model: "gpt-5.6-luna",
-  reasoning: "medium",
+  reasoning: "low",
 };
 
 const extensionDirectory = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -61,6 +63,7 @@ export function parseSummaryConfig(value: unknown) {
   }
 
   return {
+    enabled: value.enabled === true,
     provider: value.provider.trim(),
     model: value.model.trim(),
     reasoning: value.reasoning,

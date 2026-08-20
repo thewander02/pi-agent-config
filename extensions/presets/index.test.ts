@@ -79,6 +79,7 @@ function allPresetTools() {
     "workflow",
     "aside_repl",
     "mcp",
+    "load_tools",
   ].map((name) => ({
     name,
     description: `${name} tool`,
@@ -168,7 +169,7 @@ function checkedInPresets() {
   return result.presets;
 }
 
-test("checked-in config defines all four presets with exact semantics", () => {
+test("checked-in config preserves model quality while deferring optional tools", () => {
   const presets = checkedInPresets();
 
   assert.deepEqual(Object.keys(presets), [
@@ -195,7 +196,7 @@ test("checked-in config defines all four presets with exact semantics", () => {
     provider: "openai-codex",
     model: "gpt-5.6-sol",
     thinkingLevel: "high",
-    tools: ["read", "fd", "rg", "aside_repl", "mcp", "ask_user"],
+    tools: ["read", "fd", "rg", "ask_user", "load_tools"],
   });
   assert.deepEqual(presets.build, {
     provider: "openai-codex",
@@ -209,18 +210,7 @@ test("checked-in config defines all four presets with exact semantics", () => {
       "fd",
       "rg",
       "ask_user",
-      "bg_start",
-      "bg_status",
-      "bg_list",
-      "bg_kill",
-      "subagent_spawn",
-      "subagent_wait",
-      "subagent_cancel",
-      "subagent_check",
-      "subagent_list",
-      "workflow",
-      "aside_repl",
-      "mcp",
+      "load_tools",
     ],
   });
   assert.ok(Object.isFrozen(presets.quick.tools));

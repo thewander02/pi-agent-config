@@ -82,6 +82,8 @@ export default function (pi: ExtensionAPI) {
     if (entries.length === 0) return;
 
     const config = loadSummaryConfig();
+    if (!config.enabled) return;
+
     const controller = new AbortController();
     statusContext = ctx;
     const task = (async () => {
@@ -93,12 +95,19 @@ export default function (pi: ExtensionAPI) {
           transcript: serializeRunTranscript(entries),
           signal: controller.signal,
         });
-        recap = { ...generated, ...config };
+        recap = {
+          ...generated,
+          provider: config.provider,
+          model: config.model,
+          reasoning: config.reasoning,
+        };
       } catch (error) {
         if (controller.signal.aborted || !sessionActive) return;
         recap = {
           ...buildFallbackRecap(entries),
-          ...config,
+          provider: config.provider,
+          model: config.model,
+          reasoning: config.reasoning,
           fallback: true,
         };
         const detail = error instanceof Error ? ` ${error.message}` : "";
@@ -136,6 +145,38 @@ export default function (pi: ExtensionAPI) {
     statusContext = undefined;
   });
 
+  pi.registerCommand("summaries", {
+    description: "Enable, disable, or inspect model-generated run recaps",
+    handler: async (args, ctx) => {
+      const action = args.trim().toLowerCase() || "status";
+      const current = loadSummaryConfig();
+
+      if (action === "status") {
+        ctx.ui.notify(
+          `Run recaps: ${current.enabled ? "on" : "off"} · ${current.provider}/${current.model} · ${current.reasoning}`,
+          "info",
+        );
+        return;
+      }
+      if (action !== "on" && action !== "off") {
+        ctx.ui.notify("Usage: /summaries on|off|status", "warning");
+        return;
+      }
+
+      const config = { ...current, enabled: action === "on" };
+      try {
+        await saveSummaryConfig(config);
+      } catch {
+        ctx.ui.notify("Could not save the run recap setting.", "error");
+        return;
+      }
+      ctx.ui.notify(
+        `Run recaps ${config.enabled ? "enabled" : "disabled"}.`,
+        "info",
+      );
+    },
+  });
+
   pi.registerCommand("summary-model", {
     description: "Choose the model and reasoning level used for run recaps",
     handler: async (_args, ctx) => {
@@ -161,6 +202,7 @@ export default function (pi: ExtensionAPI) {
       if (!reasoning) return;
 
       const config = {
+        enabled: current.enabled,
         provider: model.provider,
         model: model.id,
         reasoning,

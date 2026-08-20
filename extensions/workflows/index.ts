@@ -64,8 +64,6 @@ import {
   buildWorkflowAgentPrompt,
   buildWorkflowResultMessage,
   WORKFLOW_PARAMETER_DESCRIPTIONS,
-  WORKFLOW_PROMPT_GUIDELINES,
-  WORKFLOW_PROMPT_SNIPPET,
   WORKFLOW_TOOL_DESCRIPTION,
 } from "./prompt.ts";
 import {
@@ -368,8 +366,6 @@ export default function workflows(pi: ExtensionAPI) {
     name: "workflow",
     label: "Workflow",
     description: WORKFLOW_TOOL_DESCRIPTION,
-    promptSnippet: WORKFLOW_PROMPT_SNIPPET,
-    promptGuidelines: WORKFLOW_PROMPT_GUIDELINES,
     parameters: WorkflowParams,
 
     async execute(_toolCallId, params, signal, onUpdate, ctx) {
